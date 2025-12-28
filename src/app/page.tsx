@@ -1,284 +1,296 @@
-import Link from "next/link";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+"use client";
+
 import { Button } from "@/components/ui/button";
-import { 
-  Upload, 
-  ShoppingCart, 
-  Shield, 
-  Wallet,
-  ArrowRight,
-  BarChart3,
-  Globe,
-  Users,
-  Sparkles,
-  TrendingUp,
-  ShieldCheck,
-  Zap
-} from "lucide-react";
+import { Zap, Cherry, Scroll, Waves, Mountain } from "lucide-react";
+import Link from "next/link";
+
+function ToriiGate(props: any) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M2 4h20" />
+      <path d="M3 8h18" />
+      <path d="M6 4v14" />
+      <path d="M18 4v14" />
+      <path d="M3 18h18" />
+    </svg>
+  );
+}
+
+function Bamboo(props: any) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M8 3v18" />
+      <path d="M12 5v14" />
+      <path d="M16 4v16" />
+      <path d="M6 8c2-3 4-3 6 0" />
+      <path d="M14 12c2-3 4-3 6 0" />
+    </svg>
+  );
+}
+
+function Samurai(props: any) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M2 12c2-6 8-9 10-9s8 3 10 9" />
+      <path d="M4 16c4 2 8 2 8 2s4 0 8-2" />
+      <path d="M9 9h6" />
+      <path d="M8 13h8" />
+    </svg>
+  );
+}
+
+function Shuriken(props: any) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z" />
+      <path d="M12 12l6-6" />
+    </svg>
+  );
+}
 
 export default function Home() {
-  const dashboardCards = [
-    {
-      title: "Creator Studio",
-      description: "Upload, manage, and monetize your creative content",
-      icon: <Upload className="h-6 w-6" />,
-      href: "/creator/dashboard",
-      color: "bg-pastel-lavender",
-      borderColor: "border-lavender-200",
-      iconColor: "text-lavender-600",
-      buttonColor: "bg-lavender-500 hover:bg-lavender-600",
-      stats: "1.2K+ Active Creators",
-      gradient: "from-lavender-100 to-lilac-50"
-    },
-    {
-      title: "Marketplace",
-      description: "Discover and distribute premium content worldwide",
-      icon: <ShoppingCart className="h-6 w-6" />,
-      href: "/distributor/dashboard",
-      color: "bg-pastel-mint",
-      borderColor: "border-mint-200",
-      iconColor: "text-mint-600",
-      buttonColor: "bg-mint-500 hover:bg-mint-600",
-      stats: "850+ Distributors",
-      gradient: "from-mint-100 to-seafoam-50"
-    },
-    {
-      title: "Admin Console",
-      description: "Platform oversight and moderation tools",
-      icon: <Shield className="h-6 w-6" />,
-      href: "/admin/dashboard",
-      color: "bg-pastel-peach",
-      borderColor: "border-peach-200",
-      iconColor: "text-peach-600",
-      buttonColor: "bg-peach-500 hover:bg-peach-600",
-      stats: "Secure Management",
-      gradient: "from-peach-100 to-coral-50"
-    },
-    {
-      title: "Wallet Hub",
-      description: "Track earnings, payouts, and financial insights",
-      icon: <Wallet className="h-6 w-6" />,
-      href: "/wallet",
-      color: "bg-pastel-sky",
-      borderColor: "border-sky-200",
-      iconColor: "text-sky-600",
-      buttonColor: "bg-sky-500 hover:bg-sky-600",
-      stats: "Secure Payments",
-      gradient: "from-sky-100 to-periwinkle-50"
-    }
-  ];
-
-  const platformStats = [
-    { 
-      label: "Active Content", 
-      value: "45.2K", 
-      change: "+12%", 
-      icon: <BarChart3 className="h-5 w-5" />,
-      color: "bg-lavender-50 text-lavender-700"
-    },
-    { 
-      label: "Live Deals", 
-      value: "3.8K", 
-      change: "+8%", 
-      icon: <Globe className="h-5 w-5" />,
-      color: "bg-mint-50 text-mint-700"
-    },
-    { 
-      label: "Monthly Users", 
-      value: "125K", 
-      change: "+24%", 
-      icon: <Users className="h-5 w-5" />,
-      color: "bg-peach-50 text-peach-700"
-    },
-  ];
-
-  const quickActions = [
-    { label: "Upload Content", icon: <Upload className="h-4 w-4" />, href: "/creator/upload" },
-    { label: "Browse Market", icon: <ShoppingCart className="h-4 w-4" />, href: "/marketplace" },
-    { label: "View Analytics", icon: <TrendingUp className="h-4 w-4" />, href: "/analytics" },
-    { label: "Get Support", icon: <ShieldCheck className="h-4 w-4" />, href: "/support" },
-  ];
-
   return (
-    <main className="min-h-screen bg-gradient-to-b from-pastel-cream to-white p-4 sm:p-8">
-      {/* Decorative Background Elements */}
+    <main className="min-h-screen bg-gradient-to-br from-black via-neutral-950 to-black text-white">
+      {/* Japanese Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-lavender-100 rounded-full blur-3xl opacity-30" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-mint-100 rounded-full blur-3xl opacity-30" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-peach-100 rounded-full blur-3xl opacity-20" />
+        {/* Washi Paper Texture */}
+        <div
+          className="absolute inset-0 opacity-[0.02]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E")`,
+            backgroundSize: '200px 200px'
+          }}
+        />
+
+        {/* Rising Sun Glow */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-red-600/20 via-red-500/10 to-red-600/20 rounded-full blur-[140px]" />
+
+        {/* Mount Fuji Silhouette */}
+        <div className="absolute bottom-0 left-0 right-0 h-64 opacity-[0.03]">
+          <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-gradient-to-t from-white to-transparent clip-path-polygon-[50%_0%,0%_100%,100%_100%]" />
+          <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-gradient-to-t from-white to-transparent clip-path-polygon-[50%_0%,0%_100%,100%_100%]" />
+        </div>
+
+        {/* Cherry Blossoms */}
+        <div className="absolute top-1/4 right-1/4 opacity-20">
+          <Cherry className="w-24 h-24 rotate-12" />
+        </div>
+        <div className="absolute bottom-1/4 left-1/4 opacity-20">
+          <Cherry className="w-16 h-16 -rotate-12" />
+        </div>
+
+        {/* Kanji Patterns */}
+        <div className="absolute top-20 left-10 opacity-[0.02]">
+          <span className="text-9xl font-bold text-white">和</span>
+        </div>
+        <div className="absolute bottom-20 right-10 opacity-[0.02]">
+          <span className="text-9xl font-bold text-white">創</span>
+        </div>
+
+        {/* Red Seigaiha Waves Pattern */}
+        <div className="absolute bottom-0 left-0 right-0 h-48 opacity-[0.03] bg-repeat-x"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 40'%3E%3Cpath d='M0,40 Q15,25 30,40 T60,40 T90,40 T120,40' fill='none' stroke='%23dc2626' stroke-width='2'/%3E%3C/svg%3E")`,
+            backgroundSize: '240px 48px'
+          }}
+        />
+
+        {/* Gold Accent Lines */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
       </div>
 
-      <div className="relative mx-auto max-w-6xl">
-        {/* Header Section */}
-        <header className="mb-12 text-center relative">
-          <div className="inline-flex items-center justify-center p-3 bg-gradient-to-r from-lavender-200 to-sky-200 rounded-2xl mb-6 shadow-sm">
-            <div className="bg-white p-2.5 rounded-xl shadow-xs">
-              <div className="h-8 w-8 bg-gradient-to-r from-lavender-400 to-sky-400 rounded-lg" />
-            </div>
-          </div>
-          
-          <div className="inline-flex items-center gap-2 bg-lavender-50 px-4 py-2 rounded-full mb-4">
-            <Sparkles className="h-4 w-4 text-lavender-500" />
-            <span className="text-sm font-medium text-lavender-700">
-              The Future of Content Monetization
-            </span>
-          </div>
-          
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-800 mb-4">
-            Welcome to{" "}
-            <span className="bg-gradient-to-r from-lavender-400 via-sky-400 to-mint-400 bg-clip-text text-transparent">
-              ViewPay
-            </span>
-          </h1>
-          
-          <p className="text-lg text-gray-600 mt-4 max-w-2xl mx-auto leading-relaxed">
-            A seamless platform for creators, distributors, and administrators to 
-            manage content, licensing, and payments in one beautiful workspace.
-          </p>
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <header className="py-24 lg:py-32">
+          {/* Top Bar with Japanese Elements */}
+          <div className="flex items-center justify-between mb-20">
+            <div className="flex items-center gap-6">
+              {/* Musubi Seal */}
+              <div className="relative">
+                {/* Outer Circle */}
+                <div className="absolute inset-0 rounded-full border-2 border-red-600/30 animate-pulse" />
 
-          {/* Platform Stats */}
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
-            {platformStats.map((stat, index) => (
-              <div 
-                key={index}
-                className="flex items-center gap-4 bg-white/80 backdrop-blur-sm rounded-2xl px-5 py-4 shadow-xs border border-gray-100 hover:shadow-sm transition-shadow duration-300"
-              >
-                <div className={`p-3 rounded-xl ${stat.color.split(' ')[0]} bg-opacity-20`}>
-                  <div className={stat.color.split(' ')[1]}>
-                    {stat.icon}
-                  </div>
-                </div>
-                <div className="text-left">
-                  <div className="text-2xl font-bold text-gray-800">{stat.value}</div>
-                  <div className="flex items-center gap-2">
-                    <div className="text-sm text-gray-500">{stat.label}</div>
-                    <div className="flex items-center text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                      <TrendingUp className="h-3 w-3 mr-1" />
-                      {stat.change}
-                    </div>
-                  </div>
+                {/* Inner Circle with Kanji */}
+                <div className="relative flex items-center justify-center w-16 h-16 rounded-full border border-white/20 bg-gradient-to-br from-black to-neutral-900 shadow-2xl">
+                  {/* Red Sun */}
+                  <div className="absolute inset-4 rounded-full bg-gradient-to-br from-red-600 to-red-800 opacity-80" />
+
+                  {/* Kanji Character */}
+                  <span className="relative text-2xl font-bold text-white tracking-widest">結</span>
+
+                  {/* Decorative Dots */}
+                  <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-amber-500" />
+                  <div className="absolute -bottom-1 -left-1 w-3 h-3 rounded-full bg-amber-500" />
                 </div>
               </div>
-            ))}
+
+              {/* Brand Name */}
+              <div className="relative">
+                <h2 className="text-2xl font-bold tracking-wider bg-gradient-to-r from-white via-red-200 to-white bg-clip-text text-transparent">
+                  結 MUSUBI
+                </h2>
+                <div className="absolute -bottom-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/50 to-transparent" />
+              </div>
+            </div>
+
+            {/* Samurai Crest Badge */}
+            <div className="hidden lg:block">
+              <div className="relative px-4 py-2 rounded-full border border-white/10 bg-gradient-to-r from-black/50 to-neutral-900/50 backdrop-blur-sm">
+                <div className="flex items-center gap-3">
+                  <Samurai className="w-5 h-5 text-red-400" />
+                  <span className="text-sm font-medium text-gray-300 tracking-wider">侍 MODE</span>
+                  <div className="h-4 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent" />
+                  <Shuriken className="w-4 h-4 text-amber-400 animate-spin-slow" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Hero Section */}
+          <div className="text-center max-w-4xl mx-auto">
+            {/* Japanese Lantern Banner */}
+            <div className="relative inline-flex items-center justify-center mb-12">
+              {/* Lantern String */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-8 bg-gradient-to-b from-amber-500/50 to-transparent" />
+
+              {/* Lantern */}
+              <div className="relative px-6 py-3 rounded-lg border-2 border-red-600/30 bg-gradient-to-b from-black/80 to-neutral-900/80">
+                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-12 h-2 bg-red-600/50 rounded-t-lg" />
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-amber-500/50 rounded-b-lg" />
+
+                <div className="flex items-center gap-3">
+                  <Zap className="h-4 w-4 text-red-400 animate-pulse" />
+                  <span className="text-sm tracking-[0.3em] text-gray-300 font-light">
+                    結びの経済
+                  </span>
+                  <span className="text-xs text-gray-500 tracking-widest">|</span>
+                  <span className="text-sm tracking-widest text-gray-400">
+                    ECONOMY OF CONNECTION
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Title with Japanese Calligraphy Effect */}
+            <div className="relative mb-8">
+              <h1 className="text-7xl sm:text-8xl lg:text-9xl font-bold tracking-tight mb-4">
+                <span className="bg-gradient-to-b from-white via-red-100 to-red-300 bg-clip-text text-transparent relative">
+                  MUSUBI
+                  {/* Brush Stroke Effect */}
+                  <div className="absolute -bottom-4 left-1/4 w-1/2 h-1 bg-gradient-to-r from-transparent via-red-500/50 to-transparent" />
+                </span>
+              </h1>
+
+              {/* Subtitle with Japanese Characters */}
+              <div className="relative inline-block">
+                <p className="text-2xl tracking-[0.5em] text-gray-500 font-light mb-2">
+                  結び — 創り — 繋ぐ
+                </p>
+                <div className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+              </div>
+            </div>
+
+            {/* Japanese Proverb */}
+            <div className="relative my-12">
+              <div className="flex items-center justify-center gap-8 mb-4">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                <Scroll className="w-6 h-6 text-amber-400/50" />
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+              </div>
+
+              <p className="text-lg text-gray-400 italic font-light tracking-wide">
+                "The thread of connection weaves the fabric of creation"
+              </p>
+              <p className="text-sm text-gray-500 mt-2 tracking-wider">
+                結びの糸が創造の布を織る
+              </p>
+            </div>
+
+            {/* Main Description */}
+            <p className="text-xl text-gray-300 mb-16 leading-relaxed max-w-3xl mx-auto tracking-wide">
+              A sacred space where creators, distributors, and platforms unite through{" "}
+              <span className="relative">
+                <span className="text-red-300 font-medium">honor</span>
+                <div className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-red-500/50 to-transparent" />
+              </span>
+              ,{" "}
+              <span className="relative">
+                <span className="text-white font-medium">fair attribution</span>
+                <div className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-amber-500/50 to-transparent" />
+              </span>
+              , and{" "}
+              <span className="relative">
+                <span className="text-red-200 font-medium">enlightened rewards</span>
+                <div className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-white/50 to-transparent" />
+              </span>
+              .
+            </p>
+
+            {/* Action Button with Japanese Aesthetic */}
+            <div className="relative inline-block">
+              {/* Decorative Elements */}
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <ToriiGate className="w-8 h-8 text-red-500/30" />
+              </div>
+
+              <Button className="group relative px-12 py-7 text-xl rounded-full border-2 border-red-600/30 bg-gradient-to-br from-black to-neutral-900 shadow-2xl hover:shadow-red-900/30 transition-all duration-300">
+                {/* Button Glow */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-600/0 via-red-600/20 to-red-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                {/* Button Content */}
+                <div className="relative flex items-center gap-4">
+                  <span className="font-bold tracking-wider bg-gradient-to-r from-white to-red-200 bg-clip-text text-transparent">
+                    創作を始める
+                  </span>
+                  <span className="text-sm text-gray-400 tracking-wider">|</span>
+                  <Button asChild>
+                    <Link href="/join">Start Creating</Link>
+                  </Button>
+
+
+                  {/* Animated Arrow */}
+                  <div className="relative w-6 h-6">
+                    <div className="absolute inset-0 rounded-full border border-red-400/30 group-hover:border-red-400 transition-colors" />
+                    <div className="absolute inset-1.5 rounded-full bg-gradient-to-r from-red-500 to-red-600 group-hover:from-red-400 group-hover:to-red-500 transition-all" />
+                  </div>
+                </div>
+              </Button>
+
+              {/* Bottom Decoration */}
+              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="w-1 h-1 rounded-full bg-amber-500/50" />
+                ))}
+              </div>
+            </div>
+
+            {/* Bottom Decorative Line */}
+            <div className="mt-20">
+              <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+              <div className="flex justify-center mt-4 gap-6 opacity-50">
+                <Bamboo className="w-5 h-5" />
+                <Waves className="w-5 h-5" />
+                <Mountain className="w-5 h-5" />
+              </div>
+            </div>
           </div>
         </header>
-
-        {/* Dashboard Cards Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-12">
-          {dashboardCards.map((card, index) => (
-            <Card 
-              key={index} 
-              className={`relative overflow-hidden border ${card.borderColor} bg-white/90 backdrop-blur-sm shadow-xs hover:shadow-md transition-all duration-500 hover:-translate-y-1.5 group`}
-            >
-              {/* Decorative Corner */}
-              <div className={`absolute top-0 right-0 w-16 h-16 ${card.color} rounded-bl-full opacity-10`} />
-              
-              {/* Hover Effect Background */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-              
-              <CardContent className="p-6 relative">
-                {/* Icon with Pastel Background */}
-                <div className={`inline-flex p-3 rounded-xl ${card.color} bg-opacity-20 mb-5`}>
-                  <div className={card.iconColor}>
-                    {card.icon}
-                  </div>
-                </div>
-
-                <CardTitle className="text-xl font-bold text-gray-800 mb-3">
-                  {card.title}
-                </CardTitle>
-                
-                <p className="text-sm text-gray-600 mb-5 leading-relaxed">
-                  {card.description}
-                </p>
-
-                {/* Stats */}
-                <div className="flex items-center text-sm text-gray-500 mb-6">
-                  <div className="h-2 w-2 bg-emerald-400 rounded-full mr-2" />
-                  {card.stats}
-                </div>
-
-                {/* Button */}
-                <Button 
-                  asChild 
-                  className={`w-full ${card.buttonColor} text-white shadow-xs hover:shadow-sm transition-all duration-300 group/btn rounded-xl`}
-                  size="lg"
-                >
-                  <Link href={card.href} className="flex items-center justify-center">
-                    <span className="font-medium">Access</span>
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Quick Actions Section */}
-        <div className="max-w-4xl mx-auto mb-12">
-          <div className="bg-gradient-to-r from-lavender-50/50 to-sky-50/50 rounded-3xl p-8 border border-gray-100 shadow-xs">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Quick Actions</h2>
-                <p className="text-gray-600">
-                  Get started with these common tasks
-                </p>
-              </div>
-              <Zap className="h-8 w-8 text-amber-400" />
-            </div>
-            
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {quickActions.map((action, index) => (
-                <Button
-                  key={index}
-                  asChild
-                  variant="outline"
-                  className="h-auto py-4 px-5 bg-white/70 backdrop-blur-sm border-gray-200 hover:border-lavender-300 hover:bg-lavender-50/50 transition-all duration-300 rounded-xl group/action"
-                >
-                  <Link href={action.href} className="flex flex-col items-center justify-center gap-2">
-                    <div className="p-2 rounded-lg bg-lavender-50 group-hover/action:bg-lavender-100 transition-colors duration-300">
-                      {action.icon}
-                    </div>
-                    <span className="text-sm font-medium text-gray-700">{action.label}</span>
-                  </Link>
-                </Button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Footer Note */}
-        <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 text-sm text-gray-500">
-            <ShieldCheck className="h-4 w-4 text-emerald-500" />
-            <span>Enterprise-grade security • 99.9% uptime • 24/7 support</span>
-          </div>
-          
-          <p className="text-sm text-gray-500">
-            Need assistance?{" "}
-            <Link 
-              href="/help" 
-              className="text-lavender-600 hover:text-lavender-700 font-medium hover:underline transition-colors"
-            >
-              Visit our help center
-            </Link>
-            {" • "}
-            <Link 
-              href="/contact" 
-              className="text-sky-600 hover:text-sky-700 font-medium hover:underline transition-colors"
-            >
-              contact support
-            </Link>
-            {" • "}
-            <Link 
-              href="/demo" 
-              className="text-mint-600 hover:text-mint-700 font-medium hover:underline transition-colors"
-            >
-              request a demo
-            </Link>
-          </p>
-        </div>
       </div>
+
+      {/* Add custom styles for clip-path */}
+      <style jsx global>{`
+        .clip-path-polygon-\[50\%_0\%\,0\%_100\%\,100\%_100\%\] {
+          clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+          animation: spin-slow 3s linear infinite;
+        }
+      `}</style>
     </main>
   );
 }
