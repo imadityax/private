@@ -1,0 +1,211 @@
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  CREATOR
+  DISTRIBUTOR
+  ADMIN
+}
+
+enum CampaignStatus {
+  DRAFT
+  LIVE
+  ENDED
+  SETTLED
+  CANCELLED
+}
+
+enum EffortActionType {
+  STORY_SHARE
+  STORY_EXTRA
+  REEL_REMIX
+  BIO_LINK
+  PINNED_COMMENT
+}
+
+enum TransactionType {
+  CAMPAIGN_FUND
+  BASE_REWARD
+  BONUS_REWARD
+  PLATFORM_FEE
+  REFUND
+  WITHDRAWAL
+  DEPOSIT
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          UserRole  @default(DISTRIBUTOR)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  instagram     InstagramAccount?
+  wallet        Wallet?
+  campaigns     Campaign[]            @relation("CreatorCampaigns")
+  participations CampaignParticipant[]
+  transactions  Transaction[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model InstagramAccount {
+  id     String @id
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  igUserId     String   @unique
+  username     String
+  followers    Int
+  accessToken  String
+  tokenExpires DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Campaign {
+  id        String @id @default(cuid())
+  creatorId String
+  creator   User   @relation("CreatorCampaigns", fields: [creatorId], references: [id])
+
+  mediaId     String // Instagram Media ID
+  title       String
+  description String?
+
+  budgetTotal Int // in paise or cents
+  baseReward  Int
+  bonusPool   Int
+
+  minFollowers    Int  @default(1000)
+  maxParticipants Int?
+
+  status CampaignStatus @default(DRAFT)
+
+  startsAt DateTime
+  endsAt   DateTime
+
+  participants CampaignParticipant[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+}
+
+model CampaignParticipant {
+  id String @id @default(cuid())
+
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  joinedAt     DateTime @default(now())
+  eligible     Boolean  @default(false)
+  disqualified Boolean  @default(false)
+
+  participationScore Int   @default(0)
+  engagementScore    Float @default(0)
+  effortScore        Int   @default(0)
+  trustScore         Int   @default(0)
+  finalScore         Float @default(0)
+
+  effortActions EffortAction[]
+  engagement    EngagementSnapshot[]
+
+  baseRewardPaid  Boolean @default(false)
+  bonusRewardPaid Boolean @default(false)
+}
+
+model EffortAction {
+  id String @id @default(cuid())
+
+  participantId String
+  participant   CampaignParticipant @relation(fields: [participantId], references: [id])
+
+  type      EffortActionType
+  value     Int?
+  mediaId   String?
+  timestamp DateTime         @default(now())
+}
+
+model EngagementSnapshot {
+  id String @id @default(cuid())
+
+  participantId String
+  participant   CampaignParticipant @relation(fields: [participantId], references: [id])
+
+  likes     Int
+  comments  Int
+  followers Int
+  createdAt DateTime @default(now())
+}
+
+model Wallet {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  balance   Int      @default(0) // paise/cents
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions Transaction[]
+}
+
+model Transaction {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  walletId String?
+  wallet   Wallet? @relation(fields: [walletId], references: [id])
+
+  type      TransactionType
+  amount    Int // + or -
+  reference String? // campaign id etc
+  createdAt DateTime        @default(now())
+}
