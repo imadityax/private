@@ -1,14 +1,30 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { signIn } from "next-auth/react";
+import { useState } from "react";
 
 export default function MetaLoginPage() {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleMetaLogin = async () => {
+    setIsLoading(true);
+    try {
+      await signIn("facebook", {
+        callbackUrl: "/",
+      });
+    } catch (error) {
+      console.error("Error signing in:", error);
+      setIsLoading(false);
+    }
+  };
+
   return (
     <main className="relative min-h-screen flex items-center justify-center text-white overflow-hidden px-6">
       {/* ===== BACKGROUND ===== */}
       <div className="fixed inset-0 -z-10">
         {/* Base gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-neutral-900 via-[#0f0f0f] to-neutral-900" />
+        <div className="absolute inset-0 bg-linear-to-br from-neutral-900 via-[#0f0f0f] to-neutral-900" />
 
         {/* Rising sun glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-red-600/20 rounded-full blur-[180px]" />
@@ -51,9 +67,11 @@ export default function MetaLoginPage() {
 
         {/* Login Button */}
         <Button
-          className="w-full py-6 text-lg bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 transition"
+          onClick={handleMetaLogin}
+          disabled={isLoading}
+          className="w-full py-6 text-lg bg-linear-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Log in with Meta
+          {isLoading ? "Connecting..." : "Log in with Meta"}
         </Button>
 
         {/* Footer note */}

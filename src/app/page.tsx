@@ -50,7 +50,7 @@ function Shuriken(props: any) {
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-black via-neutral-950 to-black text-white">
+    <main className="min-h-screen bg-linear-to-br from-black via-neutral-950 to-black text-white">
       {/* Japanese Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         {/* Washi Paper Texture */}
@@ -63,12 +63,12 @@ export default function Home() {
         />
 
         {/* Rising Sun Glow */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-red-600/20 via-red-500/10 to-red-600/20 rounded-full blur-[140px]" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-linear-to-r from-red-600/20 via-red-500/10 to-red-600/20 rounded-full blur-[140px]" />
 
         {/* Mount Fuji Silhouette */}
         <div className="absolute bottom-0 left-0 right-0 h-64 opacity-[0.03]">
-          <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-gradient-to-t from-white to-transparent clip-path-polygon-[50%_0%,0%_100%,100%_100%]" />
-          <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-gradient-to-t from-white to-transparent clip-path-polygon-[50%_0%,0%_100%,100%_100%]" />
+          <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-linear-to-t from-white to-transparent clip-path-polygon-[50%_0%,0%_100%,100%_100%]" />
+          <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-linear-to-t from-white to-transparent clip-path-polygon-[50%_0%,0%_100%,100%_100%]" />
         </div>
 
         {/* Cherry Blossoms */}
@@ -96,13 +96,13 @@ export default function Home() {
         />
 
         {/* Gold Accent Lines */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-amber-500/30 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-amber-500/30 to-transparent" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <header className="py-24 lg:py-32">
+        <header className="py-4 lg:py-6">
           {/* Top Bar with Japanese Elements */}
           <div className="flex items-center justify-between mb-20">
             <div className="flex items-center gap-6">
@@ -112,9 +112,9 @@ export default function Home() {
                 <div className="absolute inset-0 rounded-full border-2 border-red-600/30 animate-pulse" />
 
                 {/* Inner Circle with Kanji */}
-                <div className="relative flex items-center justify-center w-16 h-16 rounded-full border border-white/20 bg-gradient-to-br from-black to-neutral-900 shadow-2xl">
+                <div className="relative flex items-center justify-center w-16 h-16 rounded-full border border-white/20 bg-linear-to-br from-black to-neutral-900 shadow-2xl">
                   {/* Red Sun */}
-                  <div className="absolute inset-4 rounded-full bg-gradient-to-br from-red-600 to-red-800 opacity-80" />
+                  <div className="absolute inset-4 rounded-full bg-linear-to-br from-red-600 to-red-800 opacity-80" />
 
                   {/* Kanji Character */}
                   <span className="relative text-2xl font-bold text-white tracking-widest">結</span>
@@ -127,20 +127,20 @@ export default function Home() {
 
               {/* Brand Name */}
               <div className="relative">
-                <h2 className="text-2xl font-bold tracking-wider bg-gradient-to-r from-white via-red-200 to-white bg-clip-text text-transparent">
+                <h2 className="text-2xl font-bold tracking-wider bg-linear-to-r from-white via-red-200 to-white bg-clip-text text-transparent">
                   結 MUSUBI
                 </h2>
-                <div className="absolute -bottom-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/50 to-transparent" />
+                <div className="absolute -bottom-2 left-0 right-0 h-px bg-linear-to-r from-transparent via-red-500/50 to-transparent" />
               </div>
             </div>
 
             {/* Samurai Crest Badge */}
             <div className="hidden lg:block">
-              <div className="relative px-4 py-2 rounded-full border border-white/10 bg-gradient-to-r from-black/50 to-neutral-900/50 backdrop-blur-sm">
+              <div className="relative px-4 py-2 rounded-full border border-white/10 bg-linear-to-r from-black/50 to-neutral-900/50 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
                   <Samurai className="w-5 h-5 text-red-400" />
                   <span className="text-sm font-medium text-gray-300 tracking-wider">侍 MODE</span>
-                  <div className="h-4 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent" />
+                  <div className="h-4 w-px bg-linear-to-b from-transparent via-white/20 to-transparent" />
                   <Shuriken className="w-4 h-4 text-amber-400 animate-spin-slow" />
                 </div>
               </div>
@@ -152,10 +152,10 @@ export default function Home() {
             {/* Japanese Lantern Banner */}
             <div className="relative inline-flex items-center justify-center mb-12">
               {/* Lantern String */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-8 bg-gradient-to-b from-amber-500/50 to-transparent" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-8 bg-linear-to-b from-amber-500/50 to-transparent" />
 
               {/* Lantern */}
-              <div className="relative px-6 py-3 rounded-lg border-2 border-red-600/30 bg-gradient-to-b from-black/80 to-neutral-900/80">
+              <div className="relative px-6 py-3 rounded-lg border-2 border-red-600/30 bg-linear-to-b from-black/80 to-neutral-900/80">
                 <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-12 h-2 bg-red-600/50 rounded-t-lg" />
                 <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-amber-500/50 rounded-b-lg" />
 
@@ -175,10 +175,10 @@ export default function Home() {
             {/* Main Title with Japanese Calligraphy Effect */}
             <div className="relative mb-8">
               <h1 className="text-7xl sm:text-8xl lg:text-9xl font-bold tracking-tight mb-4">
-                <span className="bg-gradient-to-b from-white via-red-100 to-red-300 bg-clip-text text-transparent relative">
+                <span className="bg-linear-to-b from-white via-red-100 to-red-300 bg-clip-text text-transparent relative">
                   MUSUBI
                   {/* Brush Stroke Effect */}
-                  <div className="absolute -bottom-4 left-1/4 w-1/2 h-1 bg-gradient-to-r from-transparent via-red-500/50 to-transparent" />
+                  <div className="absolute -bottom-4 left-1/4 w-1/2 h-1 bg-linear-to-r from-transparent via-red-500/50 to-transparent" />
                 </span>
               </h1>
 
@@ -187,16 +187,16 @@ export default function Home() {
                 <p className="text-2xl tracking-[0.5em] text-gray-500 font-light mb-2">
                   結び — 創り — 繋ぐ
                 </p>
-                <div className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                <div className="absolute -bottom-1 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
               </div>
             </div>
 
             {/* Japanese Proverb */}
             <div className="relative my-12">
               <div className="flex items-center justify-center gap-8 mb-4">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                <div className="h-px flex-1 bg-linear-to-r from-transparent via-white/10 to-transparent" />
                 <Scroll className="w-6 h-6 text-amber-400/50" />
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                <div className="h-px flex-1 bg-linear-to-r from-transparent via-white/10 to-transparent" />
               </div>
 
               <p className="text-lg text-gray-400 italic font-light tracking-wide">
@@ -212,17 +212,17 @@ export default function Home() {
               A sacred space where creators, distributors, and platforms unite through{" "}
               <span className="relative">
                 <span className="text-red-300 font-medium">honor</span>
-                <div className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-red-500/50 to-transparent" />
+                <span className="absolute -bottom-1 left-0 right-0 h-px bg-linear-to-r from-red-500/50 to-transparent" />
               </span>
               ,{" "}
               <span className="relative">
                 <span className="text-white font-medium">fair attribution</span>
-                <div className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-amber-500/50 to-transparent" />
+                <span className="absolute -bottom-1 left-0 right-0 h-px bg-linear-to-r from-amber-500/50 to-transparent" />
               </span>
               , and{" "}
               <span className="relative">
                 <span className="text-red-200 font-medium">enlightened rewards</span>
-                <div className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-white/50 to-transparent" />
+                <span className="absolute -bottom-1 left-0 right-0 h-px bg-linear-to-r from-white/50 to-transparent" />
               </span>
               .
             </p>
@@ -234,13 +234,13 @@ export default function Home() {
                 <ToriiGate className="w-8 h-8 text-red-500/30" />
               </div>
 
-              <Button className="group relative px-12 py-7 text-xl rounded-full border-2 border-red-600/30 bg-gradient-to-br from-black to-neutral-900 shadow-2xl hover:shadow-red-900/30 transition-all duration-300">
+              <Button className="group relative px-12 py-7 text-xl rounded-full border-2 border-red-600/30 bg-linear-to-br from-black to-neutral-900 shadow-2xl hover:shadow-red-900/30 transition-all duration-300">
                 {/* Button Glow */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-600/0 via-red-600/20 to-red-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 rounded-full bg-linear-to-r from-red-600/0 via-red-600/20 to-red-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                 {/* Button Content */}
                 <div className="relative flex items-center gap-4">
-                  <span className="font-bold tracking-wider bg-gradient-to-r from-white to-red-200 bg-clip-text text-transparent">
+                  <span className="font-bold tracking-wider bg-linear-to-r from-white to-red-200 bg-clip-text text-transparent">
                     創作を始める
                   </span>
                   <span className="text-sm text-gray-400 tracking-wider">|</span>
@@ -252,7 +252,7 @@ export default function Home() {
                   {/* Animated Arrow */}
                   <div className="relative w-6 h-6">
                     <div className="absolute inset-0 rounded-full border border-red-400/30 group-hover:border-red-400 transition-colors" />
-                    <div className="absolute inset-1.5 rounded-full bg-gradient-to-r from-red-500 to-red-600 group-hover:from-red-400 group-hover:to-red-500 transition-all" />
+                    <div className="absolute inset-1.5 rounded-full bg-linear-to-r from-red-500 to-red-600 group-hover:from-red-400 group-hover:to-red-500 transition-all" />
                   </div>
                 </div>
               </Button>
@@ -267,7 +267,7 @@ export default function Home() {
 
             {/* Bottom Decorative Line */}
             <div className="mt-20">
-              <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+              <div className="h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
               <div className="flex justify-center mt-4 gap-6 opacity-50">
                 <Bamboo className="w-5 h-5" />
                 <Waves className="w-5 h-5" />
