@@ -1,213 +1,286 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Navbar } from "@/components/navbar";
 
-type Applicant = {
-  name: string;
-  platform: string;
-  status: "Pending" | "Approved";
+type Participant = {
+  id: string;
+  userId: string;
+  userName: string | null;
+  userEmail: string;
+  userImage: string | null;
+  joinedAt: string;
+  eligible: boolean;
+  disqualified: boolean;
+  status: "Pending" | "Approved" | "Rejected";
 };
 
 type Campaign = {
   id: string;
-  name: string;
-  days: number;
-  budget: number;
-  goal: string;
-  members: number;
-  applicants: Applicant[];
+  title: string;
+  description: string | null;
+  mediaId: string;
+  budgetTotal: number;
+  baseReward: number;
+  bonusPool: number;
+  minFollowers: number;
+  maxParticipants: number | null;
+  status: string;
+  startsAt: string;
+  endsAt: string;
+  createdAt: string;
+  updatedAt: string;
+  participants: Participant[];
 };
 
-const mockCampaigns: Campaign[] = [
-  {
-    id: "1",
-    name: "Instagram Growth",
-    days: 14,
-    budget: 10000,
-    goal: "Views",
-    members: 25,
-    applicants: [
-      { name: "@growthhub", platform: "Instagram", status: "Pending" },
-      { name: "@viralwave", platform: "Instagram", status: "Approved" },
-      { name: "@reachx", platform: "Instagram", status: "Approved" },
-    ],
-  },
-  {
-    id: "2",
-    name: "YouTube Launch",
-    days: 7,
-    budget: 5000,
-    goal: "Likes",
-    members: 10,
-    applicants: [
-      { name: "@nicheboost", platform: "YouTube", status: "Pending" },
-      { name: "@videomax", platform: "YouTube", status: "Approved" },
-    ],
-  },
-  {
-    id: "3",
-    name: "Twitter Brand Push",
-    days: 30,
-    budget: 25000,
-    goal: "Followers",
-    members: 50,
-    applicants: [
-      { name: "@threadking", platform: "X", status: "Approved" },
-      { name: "@dailycrypto", platform: "X", status: "Pending" },
-      { name: "@growthloops", platform: "X", status: "Pending" },
-    ],
-  },
-  {
-    id: "4",
-    name: "Reels Virality Test",
-    days: 5,
-    budget: 3000,
-    goal: "Views",
-    members: 15,
-    applicants: [],
-  },
-  {
-    id: "5",
-    name: "Product Launch – SaaS",
-    days: 21,
-    budget: 40000,
-    goal: "Clicks",
-    members: 40,
-    applicants: [
-      { name: "@saasboost", platform: "LinkedIn", status: "Approved" },
-      { name: "@b2bgrowth", platform: "LinkedIn", status: "Approved" },
-      { name: "@earlyadopters", platform: "LinkedIn", status: "Pending" },
-    ],
-  },
-  {
-    id: "6",
-    name: "Community Awareness Drive",
-    days: 10,
-    budget: 8000,
-    goal: "Engagement",
-    members: 20,
-    applicants: [
-      { name: "@communityfirst", platform: "Instagram", status: "Approved" },
-    ],
-  },
-];
+type InstagramMedia = {
+  id: string;
+  media_type?: string;
+  media_url: string;
+  permalink?: string;
+  timestamp?: string;
+  caption?: string;
+  like_count?: number;
+  comments_count?: number;
+};
 
-export default function CampaignerDashboard() {
-  const [selected, setSelected] = useState<Campaign>(mockCampaigns[0]);
+export default function CampaignDetailsPage() {
+  const params = useParams();
+  const router = useRouter();
+  const campaignId = params.id as string;
 
-  return (
-    <main className="min-h-screen bg-gradient-to-br from-black via-neutral-950 to-black text-white px-6 py-10">
-      <div className="max-w-7xl mx-auto">
+  const [campaign, setCampaign] = useState<Campaign | null>(null);
+  const [media, setMedia] = useState<InstagramMedia | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-        {/* NAVBAR */}
-        <nav className="mb-8 border border-white/10 rounded-xl px-6 py-4 bg-gradient-to-br from-black to-neutral-900">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 flex items-center justify-center rounded-full border border-red-500/30 bg-red-500/10 text-red-400 font-bold">
-                結
-              </div>
-              <div>
-                <p className="font-semibold">Campaigner Dashboard</p>
-                <p className="text-sm text-gray-400">
-                  Manage campaigns & promoters
-                </p>
-              </div>
-            </div>
+  useEffect(() => {
+    const fetchCampaignData = async () => {
+      setLoading(true);
+      setError(null);
 
-            <div className="flex items-center gap-4">
-              <Button className="bg-gradient-to-r from-red-600 to-red-500">
-                + New Campaign
-              </Button>
-              <div className="w-10 h-10 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-sm">
-                A
-              </div>
+      try {
+        // Fetch campaign data
+        const campaignResponse = await fetch(`/api/campaigns/${campaignId}`);
+        if (!campaignResponse.ok) {
+          const errorData = await campaignResponse.json();
+          throw new Error(errorData.error || "Failed to fetch campaign");
+        }
+
+        const campaignData = await campaignResponse.json();
+        setCampaign(campaignData);
+
+        // Fetch Instagram media details
+        if (campaignData.mediaId) {
+          const mediaResponse = await fetch(`/api/get-post-details?media_id=${campaignData.mediaId}`);
+          if (mediaResponse.ok) {
+            const mediaData = await mediaResponse.json();
+            setMedia(mediaData);
+          }
+        }
+      } catch (err: any) {
+        console.error("Error fetching campaign data:", err);
+        setError(err.message || "Failed to load campaign");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (campaignId) {
+      fetchCampaignData();
+    }
+  }, [campaignId]);
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-linear-to-br from-black via-neutral-950 to-black text-white px-6 py-10">
+          <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[60vh]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
+              <p className="text-gray-400">Loading campaign...</p>
             </div>
           </div>
-        </nav>
+        </main>
+      </>
+    );
+  }
 
-        {/* MAIN GRID */}
-        <div className="grid grid-cols-12 gap-6">
-
-          {/* LEFT: Campaign List */}
-          <aside className="col-span-3 border border-white/10 rounded-xl p-4 max-h-[70vh] overflow-y-auto">
-            <h2 className="text-lg font-semibold mb-4">Campaigns</h2>
-
-            <div className="space-y-3">
-              {mockCampaigns.map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => setSelected(c)}
-                  className={`w-full text-left px-4 py-3 rounded-lg border transition ${
-                    selected.id === c.id
-                      ? "border-red-500 bg-red-500/10"
-                      : "border-white/10 hover:border-red-500/40"
-                  }`}
+  if (error || !campaign) {
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-linear-to-br from-black via-neutral-950 to-black text-white px-6 py-10">
+          <div className="max-w-7xl mx-auto">
+            <Card className="border-red-500/30 bg-red-500/10">
+              <CardContent className="p-6">
+                <p className="text-red-400 mb-4">{error || "Campaign not found"}</p>
+                <Button
+                  onClick={() => router.push("/dashboard")}
+                  variant="outline"
+                  className="text-white"
                 >
-                  <p className="font-medium">{c.name}</p>
-                  <p className="text-sm text-gray-400">
-                    ₹{c.budget.toLocaleString()} • {c.goal}
-                  </p>
-                </button>
-              ))}
-            </div>
-          </aside>
+                  Go to Dashboard
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+      </>
+    );
+  }
 
-          {/* CENTER: Campaign Details */}
-          <section className="col-span-6 border border-white/10 rounded-xl p-6">
-            <h2 className="text-xl font-semibold mb-6">
-              {selected.name}
-            </h2>
+  // Calculate days from dates
+  const startsAt = new Date(campaign.startsAt);
+  const endsAt = new Date(campaign.endsAt);
+  const days = Math.ceil((endsAt.getTime() - startsAt.getTime()) / (1000 * 60 * 60 * 24));
 
-            <div className="grid grid-cols-2 gap-6 mb-8">
-              <Stat label="Duration" value={`${selected.days} days`} />
-              <Stat label="Budget" value={`₹${selected.budget.toLocaleString()}`} />
-              <Stat label="Goal" value={selected.goal} />
-              <Stat label="Promoters" value={`0 / ${selected.members}`} />
-            </div>
+  // Extract goal from title (format: "Goal Campaign")
+  const goal = campaign.title.replace(" Campaign", "");
 
-            <Button className="bg-gradient-to-r from-red-600 to-red-500">
-              Pause Campaign
-            </Button>
-          </section>
+  // Convert budget from paise to rupees
+  const budget = campaign.budgetTotal / 100;
 
-          {/* RIGHT: Applicants */}
-          <aside className="col-span-3 border border-white/10 rounded-xl p-4 max-h-[70vh] overflow-y-auto">
-            <h2 className="text-lg font-semibold mb-4">Applications</h2>
-
-            {selected.applicants.length === 0 ? (
-              <p className="text-gray-500 text-sm">
-                No applications yet.
-              </p>
-            ) : (
-              <div className="space-y-4">
-                {selected.applicants.map((a, i) => (
-                  <div
-                    key={i}
-                    className="border border-white/10 rounded-lg p-3"
-                  >
-                    <p className="font-medium">{a.name}</p>
-                    <p className="text-sm text-gray-400 mb-2">
-                      {a.platform}
-                    </p>
-                    <p
-                      className={`text-sm ${
-                        a.status === "Approved"
-                          ? "text-green-400"
-                          : "text-amber-400"
-                      }`}
-                    >
-                      {a.status}
-                    </p>
+  return (
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-linear-to-br from-black via-neutral-950 to-black text-white px-6 py-10">
+        <div className="max-w-7xl mx-auto">
+          {/* MAIN GRID */}
+          <div className="grid grid-cols-12 gap-6">
+            {/* CENTER: Campaign Details */}
+            <Card className="col-span-8 border-white/10">
+              <CardHeader>
+                <CardTitle className="text-xl">
+                  {campaign.title}
+                </CardTitle>
+                {campaign.description && (
+                  <CardDescription>{campaign.description}</CardDescription>
+                )}
+              </CardHeader>
+              <CardContent>
+                {/* Instagram Media Display */}
+                {media && (
+                  <div className="mb-8">
+                    <Label className="text-lg font-semibold mb-4 block text-white">
+                      Campaign Media
+                    </Label>
+                    <Card className="border-white/10 bg-black/40">
+                      <CardContent className="p-0">
+                        {media.media_url && (
+                          <div className="relative">
+                            <img
+                              src={media.media_url}
+                              alt={media.caption || "Instagram post"}
+                              className="w-full h-auto rounded-t-lg"
+                            />
+                          </div>
+                        )}
+                        {media.caption && (
+                          <div className="p-4">
+                            <p className="text-sm text-gray-300 mb-2">{media.caption}</p>
+                            <div className="flex gap-4 text-xs text-gray-400">
+                              {media.like_count !== undefined && (
+                                <span>❤️ {media.like_count.toLocaleString()} likes</span>
+                              )}
+                              {media.comments_count !== undefined && (
+                                <span>💬 {media.comments_count.toLocaleString()} comments</span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
                   </div>
-                ))}
-              </div>
-            )}
-          </aside>
+                )}
 
+                <div className="grid grid-cols-2 gap-6 mb-8">
+                  <Stat label="Duration" value={`${days} day${days !== 1 ? "s" : ""}`} />
+                  <Stat label="Budget" value={`₹${budget.toLocaleString()}`} />
+                  <Stat label="Goal" value={goal} />
+                  <Stat label="Promoters" value={`${campaign.participants.length} / ${campaign.maxParticipants || "∞"}`} />
+                  <Stat label="Status" value={campaign.status} />
+                  <Stat label="Base Reward" value={`₹${(campaign.baseReward / 100).toLocaleString()}`} />
+                </div>
+
+                <div className="flex gap-4">
+                  <Button className="bg-linear-to-r from-red-600 to-red-500">
+                    {campaign.status === "LIVE" ? "Pause Campaign" : campaign.status === "DRAFT" ? "Launch Campaign" : "Resume Campaign"}
+                  </Button>
+                  {media?.permalink && (
+                    <Button
+                      variant="outline"
+                      onClick={() => window.open(media.permalink, "_blank")}
+                    >
+                      View on Instagram
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* RIGHT: Participants */}
+            <aside className="col-span-4 border border-white/10 rounded-xl p-4 max-h-[70vh] overflow-y-auto">
+              <h2 className="text-lg font-semibold mb-4 text-white">Participants</h2>
+
+              {campaign.participants.length === 0 ? (
+                <p className="text-gray-500 text-sm">
+                  No participants yet.
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {campaign.participants.map((participant) => (
+                    <Card
+                      key={participant.id}
+                      className="border-white/10"
+                    >
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-3 mb-2">
+                          {participant.userImage ? (
+                            <img
+                              src={participant.userImage}
+                              alt={participant.userName || participant.userEmail}
+                              className="w-8 h-8 rounded-full"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-xs text-red-400">
+                              {(participant.userName || participant.userEmail)[0].toUpperCase()}
+                            </div>
+                          )}
+                          <div className="flex-1">
+                            <p className="font-medium text-white text-sm">
+                              {participant.userName || participant.userEmail}
+                            </p>
+                            <CardDescription className="text-xs">
+                              {participant.userEmail}
+                            </CardDescription>
+                          </div>
+                        </div>
+                        <p
+                          className={`text-sm font-medium ${participant.status === "Approved"
+                            ? "text-green-400"
+                            : participant.status === "Rejected"
+                              ? "text-red-400"
+                              : "text-amber-400"
+                            }`}
+                        >
+                          {participant.status}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </aside>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }
 
@@ -215,7 +288,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <p className="text-sm text-gray-400 mb-1">{label}</p>
-      <p className="text-lg font-semibold">{value}</p>
+      <p className="text-lg font-semibold text-white">{value}</p>
     </div>
   );
 }

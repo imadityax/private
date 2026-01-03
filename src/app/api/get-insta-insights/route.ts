@@ -7,21 +7,19 @@ import prisma from '@/lib/prisma';
 export async function GET(request: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
-
-        if (!session || !session.user?.id) {
+        const userId = (session?.user as any)?.id;
+        if (!session || !userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Get user's Instagram connection (via Facebook platform)
-        const connection = await prisma.platformConnection.findFirst({
+        // Get user's Instagram account
+        const instagramAccount = await prisma.instagramAccount.findUnique({
             where: {
-                userId: session.user.id,
-                platform: 'facebook',
-                isActive: true,
+                userId: userId,
             },
         });
 
-        if (!connection) {
+        if (!instagramAccount) {
             return NextResponse.json({ error: "Instagram account not connected" }, { status: 404 });
         }
 
@@ -30,8 +28,8 @@ export async function GET(request: NextRequest) {
         const metric = searchParams.get('metric') || 'reach,views,profile_views,total_interactions,shares,accounts_engaged';
         const period = searchParams.get('period') || 'day';
 
-        // Build the insights API URL
-        const insightsUrl = `https://graph.facebook.com/v23.0/${process.env.INSTA_ID}/insights?metric=${metric}&period=${period}&metric_type=total_value&access_token=${connection.accessToken}`
+        // Build the insights API URL using the Instagram account's ID
+        const insightsUrl = `https://graph.facebook.com/v23.0/${instagramAccount.igUserId}/insights?metric=${metric}&period=${period}&metric_type=total_value&access_token=${instagramAccount.accessToken}`
 
         const response = await axios.get(insightsUrl);
 

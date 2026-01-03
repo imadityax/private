@@ -245,7 +245,7 @@ export default function Home() {
                   </span>
                   <span className="text-sm text-gray-400 tracking-wider">|</span>
                   <Button asChild>
-                    <Link href="/join">Start Creating</Link>
+                    <Link href="/dashboard">Start Creating</Link>
                   </Button>
 
 
