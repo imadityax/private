@@ -56,7 +56,7 @@
 @layer base {
   :root {
     --font-sans: 'Inter', system-ui, sans-serif;
-    
+
     --background: 0 0% 98%;
     --foreground: 220 20% 10%;
 
@@ -295,6 +295,9 @@ body {
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
 }
 
 .dark {

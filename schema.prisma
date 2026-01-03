@@ -49,13 +49,13 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts      Account[]
-  sessions      Session[]
-  instagram     InstagramAccount?
-  wallet        Wallet?
-  campaigns     Campaign[]            @relation("CreatorCampaigns")
+  accounts       Account[]
+  sessions       Session[]
+  instagram      InstagramAccount?
+  wallet         Wallet?
+  campaigns      Campaign[]            @relation("CreatorCampaigns")
   participations CampaignParticipant[]
-  transactions  Transaction[]
+  transactions   Transaction[]
 }
 
 model Account {
@@ -100,7 +100,6 @@ model InstagramAccount {
 
   igUserId     String   @unique
   username     String
-  followers    Int
   accessToken  String
   tokenExpires DateTime
 

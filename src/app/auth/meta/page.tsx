@@ -2,20 +2,33 @@
 
 import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function MetaLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingInstagram, setIsLoadingInstagram] = useState(false);
 
   const handleMetaLogin = async () => {
     setIsLoading(true);
     try {
       await signIn("facebook", {
-        callbackUrl: "/",
+        callbackUrl: "/dashboard",
       });
     } catch (error) {
       console.error("Error signing in:", error);
       setIsLoading(false);
+    }
+  };
+
+  const handleInstagramLogin = async () => {
+    setIsLoadingInstagram(true);
+    try {
+      await signIn("instagram", {
+        callbackUrl: "/dashboard",
+      });
+    } catch (error) {
+      console.error("Error signing in with Instagram:", error);
+      setIsLoadingInstagram(false);
     }
   };
 
@@ -65,14 +78,34 @@ export default function MetaLoginPage() {
           </p>
         </div>
 
-        {/* Login Button */}
-        <Button
-          onClick={handleMetaLogin}
-          disabled={isLoading}
-          className="w-full py-6 text-lg bg-linear-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? "Connecting..." : "Log in with Meta"}
-        </Button>
+        {/* Login Buttons */}
+        <div className="space-y-4">
+          <Button
+            onClick={handleMetaLogin}
+            disabled={isLoading || isLoadingInstagram}
+            className="w-full py-6 text-lg bg-linear-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? "Connecting..." : "Log in with Meta"}
+          </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-transparent text-gray-500">or</span>
+            </div>
+          </div>
+
+          <Button
+            onClick={handleInstagramLogin}
+            disabled={isLoading || isLoadingInstagram}
+            variant="outline"
+            className="w-full py-6 text-lg border-white/20 hover:bg-white/5 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoadingInstagram ? "Connecting..." : "Log in with Instagram"}
+          </Button>
+        </div>
 
         {/* Footer note */}
         <p className="mt-6 text-sm text-gray-500">

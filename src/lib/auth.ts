@@ -1,7 +1,5 @@
 import { NextAuthOptions } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
-import InstagramProvider from "next-auth/providers/instagram";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
 import axios from "axios";
@@ -13,18 +11,36 @@ async function fetchInstagramAccountFromFacebook(accessToken: string): Promise<{
     followers: number;
 } | null> {
     try {
-        // First, get the Instagram Business Account ID from Facebook
-        // This assumes the user has connected their Instagram Business Account to their Facebook Page
-        const instagramAccountId = process.env.INSTA_ID;
+        // Step 1: Get user's Facebook pages
+        const pagesResponse = await axios.get(
+            `https://graph.facebook.com/v24.0/me/accounts?fields=id,name,instagram_business_account&access_token=${accessToken}`
+        );
 
-        if (!instagramAccountId) {
-            console.warn('⚠️ INSTA_ID not configured, skipping Instagram account fetch');
+        console.log("pagesResponse", pagesResponse.data);
+
+        const pages = pagesResponse.data.data;
+        if (!pages || pages.length === 0) {
+            console.warn('⚠️ No Facebook pages found for user');
             return null;
         }
 
-        // Fetch Instagram account details
+        // Step 2: Find a page with an Instagram Business Account
+        let instagramBusinessAccountId: string | null = null;
+        for (const page of pages) {
+            if (page.instagram_business_account) {
+                instagramBusinessAccountId = page.instagram_business_account.id;
+                break;
+            }
+        }
+
+        if (!instagramBusinessAccountId) {
+            console.warn('⚠️ No Instagram Business Account found connected to Facebook pages');
+            return null;
+        }
+
+        // Step 3: Fetch Instagram account details using the Business Account ID
         const response = await axios.get(
-            `https://graph.facebook.com/v23.0/${instagramAccountId}?fields=id,username,followers_count&access_token=${accessToken}`
+            `https://graph.facebook.com/v24.0/${instagramBusinessAccountId}?fields=id,username,followers_count&access_token=${accessToken}`
         );
 
         return {
@@ -32,8 +48,14 @@ async function fetchInstagramAccountFromFacebook(accessToken: string): Promise<{
             username: response.data.username,
             followers: response.data.followers_count || 0,
         };
-    } catch (error) {
+    } catch (error: any) {
         console.error('❌ Error fetching Instagram account from Facebook:', error);
+        if (error?.response) {
+            console.error('Facebook API Error:', {
+                status: error.response.status,
+                data: error.response.data
+            });
+        }
         return null;
     }
 }
@@ -95,59 +117,53 @@ async function handleInstagramAccount(
 export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(prisma),
     providers: [
-        GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID as string,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-        }),
         FacebookProvider({
+            id: "facebook",
             clientId: process.env.FACEBOOK_CLIENT_ID as string,
             clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
             authorization: {
                 params: {
-                    scope: "pages_manage_posts,pages_read_engagement,pages_show_list,instagram_basic,instagram_content_publish"
+                    scope: "public_profile,pages_show_list,pages_read_engagement,business_management,instagram_basic,pages_read_engagement,business_management,pages_show_list"
                 }
-            }
-        }),
-        InstagramProvider({
-            clientId: process.env.INSTAGRAM_CLIENT_ID!,
-            clientSecret: process.env.INSTAGRAM_CLIENT_SECRET!,
+            },
+            profile(profile) {
+                return {
+                    id: profile.id,
+                    name: profile.name || profile.first_name || "User",
+                    email: profile.email || `${profile.id}@facebook.temp`,
+                    image: profile.picture?.data?.url || null,
+                };
+            },
         }),
     ],
     callbacks: {
         async signIn() {
             return true
         },
-        async session({ session, user }) {
-            if (session.user && user) {
-                (session.user as any).id = user.id;
+        async jwt({ token, user }) {
+            // When user signs in, add user ID to the token
+            if (user) {
+                token.id = user.id;
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            // Add user ID from token to session
+            if (session.user && token.id) {
+                (session.user as any).id = token.id as string;
             }
             return session;
         },
     },
     events: {
         async signIn({ user, account, profile }) {
-            // Handle Instagram account for Facebook and Instagram providers
+            // Handle Instagram account for both Facebook and Instagram providers
             if (account && user?.id && (account.provider === 'facebook' || account.provider === 'instagram')) {
                 console.log('🔗 Processing Instagram account for:', account.provider);
                 try {
-                    if (account.provider === 'facebook') {
-                        // Fetch Instagram account data from Facebook Graph API
-                        if (account.access_token) {
-                            const instagramData = await fetchInstagramAccountFromFacebook(account.access_token);
-                            await handleInstagramAccount(
-                                user.id,
-                                {
-                                    providerAccountId: account.providerAccountId,
-                                    access_token: account.access_token,
-                                    expires_at: account.expires_at,
-                                },
-                                profile as any,
-                                instagramData || undefined
-                            );
-                            console.log('✅ Instagram account created from Facebook connection');
-                        }
-                    } else if (account.provider === 'instagram') {
-                        // Direct Instagram authentication
+                    // Fetch Instagram account data from Facebook Graph API
+                    if (account.access_token) {
+                        const instagramData = await fetchInstagramAccountFromFacebook(account.access_token);
                         await handleInstagramAccount(
                             user.id,
                             {
@@ -155,9 +171,10 @@ export const authOptions: NextAuthOptions = {
                                 access_token: account.access_token,
                                 expires_at: account.expires_at,
                             },
-                            profile as any
+                            profile as any,
+                            instagramData || undefined
                         );
-                        console.log('✅ Instagram account created from Instagram connection');
+                        console.log('✅ Instagram account created from Facebook connection');
                     }
                 } catch (error) {
                     console.error('❌ Error in signIn Instagram account handling:', error);
@@ -167,7 +184,7 @@ export const authOptions: NextAuthOptions = {
         },
     },
     session: {
-        strategy: "database",
+        strategy: "jwt",
     },
     secret: process.env.NEXTAUTH_SECRET,
 };
