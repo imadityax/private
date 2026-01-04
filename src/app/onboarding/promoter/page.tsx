@@ -9,52 +9,103 @@ import { useRouter } from "next/navigation";
 
 type Campaign = {
   id: string;
-  name: string;
+  title: string;
+  description: string | null;
   goal: string;
   budget: number;
-  members: number;
-  selected: number;
+  baseReward: number;
+  bonusPool: number;
+  minFollowers: number;
+  maxParticipants: number | null;
+  participantCount: number;
+  isFull: boolean;
+  daysRemaining: number;
+  startsAt: string;
+  endsAt: string;
   createdAt: string;
+  creator: {
+    name: string | null;
+    email: string;
+  };
+  mediaId: string;
 };
-
-/* 24 mock campaigns → 12 per page */
-const mockCampaigns: Campaign[] = Array.from({ length: 24 }).map((_, i) => ({
-  id: `${i + 1}`,
-  name: `Campaign ${i + 1}`,
-  goal: ["Views", "Likes", "Followers", "Clicks"][i % 4],
-  budget: [3000, 5000, 8000, 12000, 20000, 40000][i % 6],
-  members: 10 + (i % 5) * 5,
-  selected: Math.floor(Math.random() * 6),
-  createdAt: new Date(
-    Date.now() - i * 24 * 60 * 60 * 1000
-  ).toISOString(),
-}));
 
 const PAGE_SIZE = 12;
 
 export default function PromoterDashboard() {
   const router = useRouter();
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState<"latest" | "budget">("latest");
+  const [joiningCampaignId, setJoiningCampaignId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  // Redirect if query params are present (clean URL)
+  // Fetch available campaigns
   useEffect(() => {
-    if (typeof window !== "undefined" && window.location.search) {
-      router.replace("/onboarding/promoter");
-    }
-  }, [router]);
+    fetchCampaigns();
+  }, []);
 
-  const sorted = [...mockCampaigns].sort((a, b) => {
+  const fetchCampaigns = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/campaigns/available");
+      if (!response.ok) {
+        throw new Error("Failed to fetch campaigns");
+      }
+      const data = await response.json();
+      setCampaigns(data.campaigns || []);
+    } catch (err: any) {
+      console.error("Error fetching campaigns:", err);
+      setError(err.message || "Failed to load campaigns");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleJoinCampaign = async (campaignId: string) => {
+    setJoiningCampaignId(campaignId);
+    setError(null);
+    try {
+      const response = await fetch(`/api/campaigns/${campaignId}/join`, {
+        method: "POST",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to join campaign");
+      }
+
+      // Refresh campaigns list
+      await fetchCampaigns();
+
+      // Show success and navigate to campaign details
+      alert("Successfully joined the campaign!");
+      router.push(`/campaigns/${campaignId}`);
+    } catch (err: any) {
+      console.error("Error joining campaign:", err);
+      setError(err.message || "Failed to join campaign");
+      alert(err.message || "Failed to join campaign");
+    } finally {
+      setJoiningCampaignId(null);
+    }
+  };
+
+  // Sort campaigns
+  const sorted = [...campaigns].sort((a, b) => {
     if (sort === "budget") return b.budget - a.budget;
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
+  // Paginate
   const paginated = sorted.slice(
     (page - 1) * PAGE_SIZE,
     page * PAGE_SIZE
   );
 
-  const totalPages = Math.ceil(mockCampaigns.length / PAGE_SIZE);
+  const totalPages = Math.ceil(campaigns.length / PAGE_SIZE);
 
   return (
     <>
@@ -126,84 +177,153 @@ export default function PromoterDashboard() {
             </div>
           </div>
 
-          {/* GRID */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {paginated.map((c) => {
-              const progress = Math.round(
-                (c.selected / c.members) * 100
-              );
-
-              return (
-                <Card
-                  key={c.id}
-                  className="border-white/10 bg-linear-to-br from-black/40 to-neutral-900/60 hover:border-red-500/30 transition"
+          {/* Error Message */}
+          {error && (
+            <Card className="border-red-500/30 bg-red-500/10 mb-6">
+              <CardContent className="p-4">
+                <p className="text-red-400 text-sm">{error}</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={fetchCampaigns}
+                  className="mt-3"
                 >
-                  <CardHeader>
-                    <CardTitle className="text-lg tracking-wide">
-                      {c.name}
-                    </CardTitle>
-                    <CardDescription className="text-sm">
-                      Objective · {c.goal}
-                    </CardDescription>
-                  </CardHeader>
+                  Retry
+                </Button>
+              </CardContent>
+            </Card>
+          )}
 
-                  <CardContent className="space-y-4">
-                    <p className="text-sm text-gray-300">
-                      Budget · ₹{c.budget.toLocaleString()}
-                    </p>
+          {/* Loading State */}
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+              <p className="ml-3 text-gray-400">Loading campaigns...</p>
+            </div>
+          ) : campaigns.length === 0 ? (
+            <Card className="border-white/10 bg-linear-to-br from-black/40 to-neutral-900/60">
+              <CardContent className="p-12 text-center">
+                <p className="text-gray-400 mb-2">No available campaigns at the moment</p>
+                <p className="text-sm text-gray-500">
+                  Check back later or create your own campaign as a campaigner
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              {/* GRID */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {paginated.map((c) => {
+                  const progress = c.maxParticipants
+                    ? Math.round(
+                      (c.participantCount / c.maxParticipants) * 100
+                    )
+                    : 0;
 
-                    {/* Progress */}
-                    <div>
-                      <div className="flex justify-between text-xs text-gray-400 mb-1">
-                        <span>
-                          {c.selected} of {c.members} selected
-                        </span>
-                        <span>{progress}%</span>
-                      </div>
-                      <Progress
-                        value={progress}
-                        className="h-2 bg-white/10 [&>div]:bg-linear-to-r [&>div]:from-red-500 [&>div]:to-red-400"
-                      />
-                    </div>
-
-                    <Button
-                      className="w-full"
-                      disabled={c.selected >= c.members}
+                  return (
+                    <Card
+                      key={c.id}
+                      className="border-white/10 bg-linear-to-br from-black/40 to-neutral-900/60 hover:border-red-500/30 transition cursor-pointer"
+                      onClick={() => router.push(`/campaigns/${c.id}`)}
                     >
-                      {c.selected >= c.members
-                        ? "Campaign Full"
-                        : "Request Participation"}
-                    </Button>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+                      <CardHeader>
+                        <CardTitle className="text-lg tracking-wide">
+                          {c.title}
+                        </CardTitle>
+                        <CardDescription className="text-sm">
+                          {c.goal} · {c.daysRemaining} days left
+                        </CardDescription>
+                      </CardHeader>
+
+                      <CardContent className="space-y-4">
+                        <div>
+                          <p className="text-sm text-gray-300 mb-1">
+                            Budget · ₹{c.budget.toLocaleString()}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            Base Reward · ₹{c.baseReward.toLocaleString()}
+                          </p>
+                          {c.bonusPool > 0 && (
+                            <p className="text-xs text-gray-400">
+                              Bonus Pool · ₹{c.bonusPool.toLocaleString()}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Progress */}
+                        {c.maxParticipants && (
+                          <div>
+                            <div className="flex justify-between text-xs text-gray-400 mb-1">
+                              <span>
+                                {c.participantCount} of {c.maxParticipants} joined
+                              </span>
+                              <span>{progress}%</span>
+                            </div>
+                            <Progress
+                              value={progress}
+                              className="h-2 bg-white/10 [&>div]:bg-linear-to-r [&>div]:from-red-500 [&>div]:to-red-400"
+                            />
+                          </div>
+                        )}
+
+                        <div className="text-xs text-gray-400">
+                          <p>Min Followers: {c.minFollowers.toLocaleString()}</p>
+                          <p className="mt-1">
+                            By: {c.creator.name || c.creator.email.split("@")[0]}
+                          </p>
+                        </div>
+
+                        <Button
+                          className="w-full"
+                          disabled={
+                            joiningCampaignId === c.id ||
+                            c.isFull
+                          }
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleJoinCampaign(c.id);
+                          }}
+                        >
+                          {joiningCampaignId === c.id
+                            ? "Joining..."
+                            : c.isFull
+                              ? "Campaign Full"
+                              : "Join Campaign"}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </>
+          )}
 
           {/* PAGINATION */}
-          <div className="mt-12 flex items-center justify-center gap-4 text-sm">
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={page === 1}
-              onClick={() => setPage((p) => p - 1)}
-            >
-              ← Previous
-            </Button>
+          {!loading && campaigns.length > 0 && totalPages > 1 && (
+            <div className="mt-12 flex items-center justify-center gap-4 text-sm">
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={page === 1}
+                onClick={() => setPage((p) => p - 1)}
+              >
+                ← Previous
+              </Button>
 
-            <span className="text-gray-400">
-              Page {page} of {totalPages}
-            </span>
+              <span className="text-gray-400">
+                Page {page} of {totalPages}
+              </span>
 
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={page === totalPages}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              Next →
-            </Button>
-          </div>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={page === totalPages}
+                onClick={() => setPage((p) => p + 1)}
+              >
+                Next →
+              </Button>
+            </div>
+          )}
         </div>
       </main>
     </>

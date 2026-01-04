@@ -170,14 +170,14 @@ export default function CampaignDetailsPage() {
                     <Label className="text-lg font-semibold mb-4 block text-white">
                       Campaign Media
                     </Label>
-                    <Card className="border-white/10 bg-black/40">
+                    <Card className="border-white/10 bg-black/40 p-0">
                       <CardContent className="p-0">
                         {media.media_url && (
                           <div className="relative">
                             <img
                               src={media.media_url}
                               alt={media.caption || "Instagram post"}
-                              className="w-full h-auto rounded-t-lg"
+                              className="w-full h-auto rounded-xl"
                             />
                           </div>
                         )}
