@@ -156,6 +156,7 @@ export async function POST(request: NextRequest) {
                 status: 'DRAFT', // Start as draft, can be activated later
                 startsAt: startsAt,
                 endsAt: endsAt,
+                paymentStatus: "UNPAID"
             },
         });
 
