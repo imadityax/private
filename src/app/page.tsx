@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Zap, Cherry, Scroll, Waves, Mountain } from "lucide-react";
 import Link from "next/link";
+import { Footer } from "@/components/footer";
 
 function ToriiGate(props: any) {
   return (
@@ -291,6 +292,9 @@ export default function Home() {
           animation: spin-slow 3s linear infinite;
         }
       `}</style>
+
+      {/* Footer */}
+      <Footer />
     </main>
   );
 }
