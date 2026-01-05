@@ -6,6 +6,11 @@ export default withAuth(
         const token = req.nextauth.token;
         const pathname = req.nextUrl.pathname;
 
+        if (pathname.startsWith("/api/razorpay/webhook")) {
+            // allow unauthenticated requests to the webhook endpoint
+            return NextResponse.next();
+        }
+
         // Handle API routes - return JSON error for unauthenticated requests
         if (pathname.startsWith("/api/") && !pathname.startsWith("/api/auth")) {
             if (!token) {

@@ -38,6 +38,7 @@ enum TransactionType {
   WITHDRAWAL
   DEPOSIT
 }
+
 enum PaymentStatus {
   UNPAID
   PAID
@@ -45,6 +46,23 @@ enum PaymentStatus {
   REFUNDED
 }
 
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  EXPIRED
+  CANCELLED
+}
+
+enum RazorpayPaymentStatus {
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  REFUNDED
+  DISPUTED
+  PARTIALLY_CAPTURED
+  PARTIALLY_REFUNDED
+}
 
 model User {
   id            String    @id @default(cuid())
@@ -63,6 +81,8 @@ model User {
   campaigns      Campaign[]            @relation("CreatorCampaigns")
   participations CampaignParticipant[]
   transactions   Transaction[]
+  orders         Order[]
+  payments       Payment[]
 }
 
 model Account {
@@ -137,10 +157,11 @@ model Campaign {
   endsAt   DateTime
 
   participants CampaignParticipant[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  orders       Order[]
+  payments     Payment[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
 }
-
 
 model CampaignParticipant {
   id String @id @default(cuid())
@@ -216,4 +237,54 @@ model Transaction {
   amount    Int // + or -
   reference String? // campaign id etc
   createdAt DateTime        @default(now())
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  pgOrderId       String?  @unique // Razorpay order ID (order_xyz format)
+  pgPaymentLinkId String   @unique // Payment link ID from Razorpay
+  campaignId      String
+  campaign        Campaign @relation(fields: [campaignId], references: [id])
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+
+  amount      Int // in paise
+  currency    String      @default("INR")
+  status      OrderStatus @default(PENDING)
+  description String?
+
+  payments  Payment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([campaignId])
+  @@index([userId])
+  @@index([pgPaymentLinkId])
+  @@index([pgOrderId])
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  pgPaymentId String   @unique
+  orderId     String?
+  order       Order?   @relation(fields: [orderId], references: [id])
+  campaignId  String
+  campaign    Campaign @relation(fields: [campaignId], references: [id])
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  amount    Int // in paise
+  currency  String                @default("INR")
+  status    RazorpayPaymentStatus
+  method    String? // payment method (card, upi, netbanking, etc.)
+  eventType String // webhook event type for audit
+  metadata  Json? // additional data from webhook
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([campaignId])
+  @@index([userId])
+  @@index([orderId])
+  @@index([pgPaymentId])
 }
