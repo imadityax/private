@@ -209,9 +209,31 @@ export default function CampaignDetailsPage() {
                 </div>
 
                 <div className="flex gap-4">
-                  <Button className="bg-linear-to-r from-red-600 to-red-500">
-                    {campaign.status === "LIVE" ? "Pause Campaign" : campaign.status === "DRAFT" ? "Launch Campaign" : "Resume Campaign"}
+                  <Button
+                    className="bg-linear-to-r from-red-600 to-red-500"
+                    onClick={() => {
+                      if (campaign.status === "DRAFT") {
+                        router.push(`/campaigns/${campaign.id}/fund`);
+                      }
+
+                      if (campaign.status === "LIVE") {
+                        // later: pause API
+                        console.log("Pause campaign");
+                      }
+
+                      if (campaign.status === "ENDED") {
+                        // later: resume API
+                        console.log("Resume campaign");
+                      }
+                    }}
+                  >
+                    {campaign.status === "DRAFT"
+                      ? "Fund & Launch Campaign"
+                      : campaign.status === "LIVE"
+                        ? "Pause Campaign"
+                        : "Resume Campaign"}
                   </Button>
+
                   {media?.permalink && (
                     <Button
                       variant="outline"
