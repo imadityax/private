@@ -80,13 +80,13 @@ export default function MetaLoginPage() {
 
         {/* Login Buttons */}
         <div className="space-y-4">
-          <Button
-            onClick={handleMetaLogin}
+        <Button
+          onClick={handleMetaLogin}
             disabled={isLoading || isLoadingInstagram}
-            className="w-full py-6 text-lg bg-linear-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? "Connecting..." : "Log in with Meta"}
-          </Button>
+          className="w-full py-6 text-lg bg-linear-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? "Connecting..." : "Log in with Meta"}
+        </Button>
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">

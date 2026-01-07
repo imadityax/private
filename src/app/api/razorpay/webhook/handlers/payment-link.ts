@@ -7,15 +7,21 @@ export async function handlePaymentLinkPaid(event: any) {
     const campaignId = paymentLink.reference_id;
 
     if (campaignId) {
-        // Find or create order
+        // Find order by payment link ID
         const dbOrder = await prisma.order.findFirst({
             where: { pgPaymentLinkId: paymentLink.id },
         });
 
         if (dbOrder) {
+            // Update pgOrderId if missing (backup mechanism)
+            const updateData: any = { status: "PAID" };
+            if (!dbOrder.pgOrderId && paymentLink.order_id) {
+                updateData.pgOrderId = paymentLink.order_id;
+            }
+
             await prisma.order.update({
                 where: { id: dbOrder.id },
-                data: { status: "PAID" },
+                data: updateData,
             });
         }
 

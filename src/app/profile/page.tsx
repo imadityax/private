@@ -25,6 +25,8 @@ type ProfileData = {
     id: string;
     title: string;
     status: string;
+    paymentStatus: string;
+    paymentLinkUrl: string | null;
     budget: number;
     createdAt: string;
   }>;
@@ -240,6 +242,14 @@ function CampaignsCreated({
 }: {
   campaigns: ProfileData["campaignsCreated"];
 }) {
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [campaignsList, setCampaignsList] = useState(campaigns);
+
+  // Update campaigns list when prop changes
+  useEffect(() => {
+    setCampaignsList(campaigns);
+  }, [campaigns]);
+
   const formatCurrency = (amount: number) => {
     return `₹${amount.toLocaleString("en-IN")}`;
   };
@@ -255,7 +265,41 @@ function CampaignsCreated({
     return statusMap[status] || status;
   };
 
-  if (campaigns.length === 0) {
+  const handleDelete = async (campaignId: string) => {
+    if (!confirm("Are you sure you want to delete this campaign? This action cannot be undone.")) {
+      return;
+    }
+
+    setDeleting(campaignId);
+    try {
+      const response = await fetch(`/api/campaigns/${campaignId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to delete campaign");
+      }
+
+      // Remove from list
+      setCampaignsList(campaignsList.filter((c) => c.id !== campaignId));
+    } catch (error: any) {
+      alert(error.message || "Failed to delete campaign");
+      console.error("Error deleting campaign:", error);
+    } finally {
+      setDeleting(null);
+    }
+  };
+
+  const handlePay = (paymentLinkUrl: string | null) => {
+    if (!paymentLinkUrl) {
+      alert("Payment link not available. Please create a payment link first.");
+      return;
+    }
+    window.open(paymentLinkUrl, "_blank");
+  };
+
+  if (campaignsList.length === 0) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-400">No campaigns created yet</p>
@@ -268,13 +312,54 @@ function CampaignsCreated({
 
   return (
     <div className="space-y-4">
-      {campaigns.map((campaign) => (
-        <Row
+      {campaignsList.map((campaign) => (
+        <Card
           key={campaign.id}
-          left={campaign.title}
-          center={getStatusLabel(campaign.status)}
-          right={formatCurrency(campaign.budget)}
-        />
+          className="border-white/10 bg-linear-to-br from-black/40 to-neutral-900/60"
+        >
+          <CardContent className="px-5 py-4">
+            <div className="flex justify-between items-center">
+              <div className="flex-1">
+                <span className="text-white">{campaign.title}</span>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-sm text-gray-400">
+                    {getStatusLabel(campaign.status)}
+                  </span>
+                  {campaign.paymentStatus === "UNPAID" && (
+                    <span className="text-xs px-2 py-0.5 rounded bg-red-500/20 text-red-400">
+                      Unpaid
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="font-medium text-white">
+                  {formatCurrency(campaign.budget)}
+                </span>
+                   {campaign.paymentStatus === "UNPAID" && campaign.paymentLinkUrl && (
+                  <Button
+                    size="sm"
+                    onClick={() => handlePay(campaign.paymentLinkUrl)}
+                    className="bg-red-500 hover:bg-red-600 text-white"
+                  >
+                    Pay Now
+                  </Button>
+                )}
+                {(campaign.status === "DRAFT" || campaign.paymentStatus === "UNPAID") && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleDelete(campaign.id)}
+                    disabled={deleting === campaign.id}
+                    className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+                  >
+                    {deleting === campaign.id ? "Deleting..." : "Delete"}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       ))}
     </div>
   );

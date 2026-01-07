@@ -153,6 +153,8 @@ model Campaign {
   status        CampaignStatus @default(DRAFT)
   paymentStatus PaymentStatus  @default(UNPAID)
 
+  paymentLinkUrl String? // Razorpay payment link URL for campaign funding
+
   startsAt DateTime
   endsAt   DateTime
 

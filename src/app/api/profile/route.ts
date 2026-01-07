@@ -18,12 +18,19 @@ export async function GET(request: NextRequest) {
             include: {
                 wallet: true,
                 campaigns: {
+                    where: {
+                        status: {
+                            not: 'CANCELLED', // Exclude cancelled campaigns from profile
+                        },
+                    },
                     orderBy: { createdAt: 'desc' },
                     select: {
                         id: true,
                         title: true,
                         status: true,
                         budgetTotal: true,
+                        paymentStatus: true,
+                        paymentLinkUrl: true,
                         createdAt: true,
                     },
                 },
@@ -98,6 +105,8 @@ export async function GET(request: NextRequest) {
             id: campaign.id,
             title: campaign.title,
             status: campaign.status,
+            paymentStatus: campaign.paymentStatus,
+            paymentLinkUrl: campaign.paymentLinkUrl,
             budget: campaign.budgetTotal / 100,
             createdAt: campaign.createdAt,
         }));

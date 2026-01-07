@@ -93,3 +93,64 @@ export async function GET(
     }
 }
 
+export async function DELETE(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> | { id: string } }
+) {
+    try {
+        const session = await getServerSession(authOptions);
+        const userId = (session?.user as any)?.id;
+
+        if (!session || !userId) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const campaignId = 'then' in params ? (await params).id : params.id;
+
+        // Fetch campaign to check ownership and status
+        const campaign = await prisma.campaign.findUnique({
+            where: { id: campaignId },
+            select: {
+                creatorId: true,
+                status: true,
+                paymentStatus: true,
+            },
+        });
+
+        if (!campaign) {
+            return NextResponse.json({ error: 'Campaign not found' }, { status: 404 });
+        }
+
+        // Check if user is the creator
+        if (campaign.creatorId !== userId) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+        }
+
+        // Only allow deletion (soft delete) of DRAFT campaigns or UNPAID campaigns
+        // Prevent deletion of LIVE or PAID campaigns
+        if (campaign.status === 'LIVE' && campaign.paymentStatus === 'PAID') {
+            return NextResponse.json(
+                { error: 'Cannot delete a live paid campaign' },
+                { status: 400 }
+            );
+        }
+
+        // Soft delete: Update status to CANCELLED instead of deleting
+        await prisma.campaign.update({
+            where: { id: campaignId },
+            data: { status: 'CANCELLED' },
+        });
+
+        return NextResponse.json(
+            { success: true, message: 'Campaign deleted successfully' },
+            { status: 200 }
+        );
+    } catch (error: any) {
+        console.error('Error deleting campaign:', error);
+        return NextResponse.json(
+            { error: 'Failed to delete campaign', details: error.message },
+            { status: 500 }
+        );
+    }
+}
+
